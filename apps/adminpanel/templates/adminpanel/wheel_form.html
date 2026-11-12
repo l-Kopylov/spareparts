@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Колёса и шины — Spare Parts{% endblock %}
+
+{% block content %}
+<h1>Колёса и шины</h1>
+
+{% if photos %}
+    <h3>Текущие фото</h3>
+    {% for ph in photos %}
+        <div style="display:inline-block; margin:5px; text-align:center">
+            <img src="{{ ph.image.url }}" width="120"><br>
+            <form method="post" action="{% url 'photo_delete' kind item.pk ph.pk %}"
+                  style="display:inline">
+                {% csrf_token %}<button type="submit">✕</button>
+            </form>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" id="wheel-form">
+    {% csrf_token %}
+
+    {# общие поля (всё, что не входит в SPECIFIC_FIELDS) #}
+    {% for field in form %}
+        {% if field.name == "tire_width" or field.name == "tire_profile" or field.name == "tire_diameter" or field.name == "season" or field.name == "tread_remain" or field.name == "rim_width" or field.name == "rim_diameter" or field.name == "rim_type" or field.name == "pcd_bolt_count" or field.name == "pcd_diameter" or field.name == "offset_et" or field.name == "center_bore" %}
+            {# пропускаем — они пойдут в блоках ниже #}
+        {% else %}
+            <p>{{ field.label_tag }} {{ field }}{{ field.errors }}</p>
+        {% endif %}
+    {% endfor %}
+
+    <fieldset data-group="tire" style="border:1px solid #ccc; margin:10px 0; padding:10px;">
+        <legend>Параметры шины</legend>
+        <p>{{ form.tire_width.label_tag }} {{ form.tire_width }}{{ form.tire_width.errors }}</p>
+        <p>{{ form.tire_profile.label_tag }} {{ form.tire_profile }}{{ form.tire_profile.errors }}</p>
+        <p>{{ form.tire_diameter.label_tag }} {{ form.tire_diameter }}{{ form.tire_diameter.errors }}</p>
+        <p>{{ form.season.label_tag }} {{ form.season }}{{ form.season.errors }}</p>
+        <p>{{ form.tread_remain.label_tag }} {{ form.tread_remain }}{{ form.tread_remain.errors }}</p>
+    </fieldset>
+
+    <fieldset data-group="rim" style="border:1px solid #ccc; margin:10px 0; padding:10px;">
+        <legend>Параметры диска</legend>
+        <p>{{ form.rim_width.label_tag }} {{ form.rim_width }}{{ form.rim_width.errors }}</p>
+        <p>{{ form.rim_diameter.label_tag }} {{ form.rim_diameter }}{{ form.rim_diameter.errors }}</p>
+        <p>{{ form.rim_type.label_tag }} {{ form.rim_type }}{{ form.rim_type.errors }}</p>
+        <p>{{ form.pcd_bolt_count.label_tag }} {{ form.pcd_bolt_count }}{{ form.pcd_bolt_count.errors }}</p>
+        <p>{{ form.pcd_diameter.label_tag }} {{ form.pcd_diameter }}{{ form.pcd_diameter.errors }}</p>
+        <p>{{ form.offset_et.label_tag }} {{ form.offset_et }}{{ form.offset_et.errors }}</p>
+        <p>{{ form.center_bore.label_tag }} {{ form.center_bore }}{{ form.center_bore.errors }}</p>
+    </fieldset>
+
+    <button type="submit">Сохранить</button>
+</form>
+
+<script>
+(function () {
+  const form = document.getElementById("wheel-form");
+  const pf = form.querySelector("[name=product_form]");
+  const tire = form.querySelector('[data-group="tire"]');
+  const rim  = form.querySelector('[data-group="rim"]');
+  function update() {
+    const v = pf.value;
+    tire.style.display = (v === "tire" || v === "set") ? "" : "none";
+    rim.style.display  = (v === "rim"  || v === "set") ? "" : "none";
+  }
+  pf.addEventListener("change", update);
+  update();
+})();
+</script>
+<a href="{% url 'panel_index' %}">← В панель</a>
+{% endblock %}

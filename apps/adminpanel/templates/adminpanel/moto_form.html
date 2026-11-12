@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Деталь для мото — Spare Parts{% endblock %}
+
+{% block content %}
+<h1>Деталь для мото</h1>
+
+{% if photos %}
+    <h3>Текущие фото</h3>
+    {% for ph in photos %}
+        <div style="display:inline-block; margin:5px; text-align:center">
+            <img src="{{ ph.image.url }}" width="120"><br>
+            <form method="post" action="{% url 'photo_delete' kind item.pk ph.pk %}"
+                  style="display:inline">
+                {% csrf_token %}<button type="submit">✕</button>
+            </form>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Сохранить</button>
+</form>
+<a href="{% url 'panel_index' %}">← В панель</a>
+{% endblock %}

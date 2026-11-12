@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Spare Parts{% endblock %}</title>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <a href="{% url 'index' %}">Каталог</a>
+        | <a href="/panel/">Панель управления</a>
+        | <a href="/admin/">Django-админка</a>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        {% block footer %}Spare Parts App{% endblock %}
+    </footer>
+</body>
+</html>

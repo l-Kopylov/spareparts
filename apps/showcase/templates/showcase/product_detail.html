@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}{{ item.name }} — Spare Parts{% endblock %}
+
+{% block content %}
+<h1>{{ item.name }}</h1>
+
+<div class="product">
+    <div class="photos">
+        {% for photo in item.photos.all %}
+            <img src="{{ photo.image.url }}" alt="{{ item.name }}" width="300">
+        {% empty %}
+            <p>Нет фото.</p>
+        {% endfor %}
+    </div>
+
+    <table>
+        <tr><th>Цена</th><td>{{ item.price }} ₽</td></tr>
+        <tr><th>Состояние</th><td>{{ item.get_condition_display }}</td></tr>
+        <tr><th>Производитель</th><td>{{ item.brand|default:"—" }}</td></tr>
+        <tr><th>Артикул (OEM)</th><td>{{ item.oem|default:"—" }}</td></tr>
+        {% block spec %}{% endblock %}  {# специфичные поля сущности — перекрыть в наследниках #}
+    </table>
+
+    <h3>Описание</h3>
+    <p>{{ item.description|linebreaksbr|default:"—" }}</p>
+</div>
+
+<a href="{% url 'index' %}">← В каталог</a>
+{% endblock %}

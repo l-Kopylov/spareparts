@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} — Spare Parts{% endblock %}
+
+{% block content %}
+<h1>{{ category.name }}</h1>
+{% if items %}
+    <ul>
+    {% for p in items %}
+        <li>{{ p.name }} — {{ p.price }} ₽</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>В этой категории пока пусто.</p>
+{% endif %}
+{% endblock %}

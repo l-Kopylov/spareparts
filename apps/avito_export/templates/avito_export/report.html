@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Отчёт валидации — Авито{% endblock %}
+
+{% block content %}
+<h1>Отчёт валидации перед выгрузкой</h1>
+{% if problems %}
+    <p>Эти строки не попадут в файл:</p>
+    <ul>
+    {% for pr in problems %}
+        <li>{{ pr }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Все строки валидны.</p>
+{% endif %}
+<p><a href="{% url 'avito_export' %}">Скачать выгрузку</a> |
+   <a href="{% url 'panel_index' %}">← В панель</a></p>
+{% endblock %}

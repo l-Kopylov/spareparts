@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог запчастей — Spare Parts{% endblock %}
+
+{% block content %}
+<h1>Каталог запчастей</h1>
+
+<section id="auto">
+    <h2>Детали для авто</h2>
+    {% if auto_parts %}
+        <ul>
+        {% for p in auto_parts %}
+            <li><a href="{% url 'product_detail' 'auto' p.pk %}">{{ p.name }}</a>
+                — {{ p.price }} ₽ ({{ p.get_condition_display }})</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Пусто.</p>
+    {% endif %}
+</section>
+
+<section id="moto">
+    <h2>Детали для мото</h2>
+    {% if moto_parts %}
+        <ul>
+        {% for p in moto_parts %}
+            <li><a href="{% url 'product_detail' 'moto' p.pk %}">{{ p.name }}</a>
+                — {{ p.price }} ₽ ({{ p.get_condition_display }})</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Пусто.</p>
+    {% endif %}
+</section>
+
+<section id="wheels">
+    <h2>Колёса и шины</h2>
+    {% if wheels %}
+        <ul>
+        {% for p in wheels %}
+            <li><a href="{% url 'product_detail' 'wheel' p.pk %}">{{ p.name }}</a>
+                — {{ p.price }} ₽ ({{ p.get_condition_display }})</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Пусто.</p>
+    {% endif %}
+</section>
+{% endblock %}
