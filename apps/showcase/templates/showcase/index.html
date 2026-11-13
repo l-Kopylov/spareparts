@@ -1,49 +1,39 @@
 {% extends "base.html" %}
 
-{% block title %}Каталог запчастей — Spare Parts{% endblock %}
+{% block title %}{{ kind_label }} — Spare Parts{% endblock %}
 
 {% block content %}
-<h1>Каталог запчастей</h1>
+<h1 class="mb-4">{{ kind_label }}</h1>
 
-<section id="auto">
-    <h2>Детали для авто</h2>
-    {% if auto_parts %}
-        <ul>
-        {% for p in auto_parts %}
-            <li><a href="{% url 'product_detail' 'auto' p.pk %}">{{ p.name }}</a>
-                — {{ p.price }} ₽ ({{ p.get_condition_display }})</li>
+{% if items %}
+    <div class="row g-3">
+        {% for item in items %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card h-100">
+                    {% if item.photos.all %}
+                        <img src="{{ item.photos.all.0.image.url }}" class="card-img-top"
+                             alt="{{ item.name }}" style="height: 180px; object-fit: cover;">
+                    {% else %}
+                        <div class="d-flex align-items-center justify-content-center bg-light"
+                             style="height: 180px;">
+                            <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ item.name }}</h5>
+                        <p class="card-text text-muted small mb-2">
+                            {{ item.get_condition_display }}
+                            {% if item.brand %}· {{ item.brand }}{% endif %}
+                        </p>
+                        <p class="card-text fw-bold fs-5 mt-auto mb-2">{{ item.price }} ₽</p>
+                        <a href="{% url 'product_detail' kind item.pk %}"
+                           class="btn btn-outline-primary btn-sm">Подробнее</a>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-        </ul>
-    {% else %}
-        <p>Пусто.</p>
-    {% endif %}
-</section>
-
-<section id="moto">
-    <h2>Детали для мото</h2>
-    {% if moto_parts %}
-        <ul>
-        {% for p in moto_parts %}
-            <li><a href="{% url 'product_detail' 'moto' p.pk %}">{{ p.name }}</a>
-                — {{ p.price }} ₽ ({{ p.get_condition_display }})</li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>Пусто.</p>
-    {% endif %}
-</section>
-
-<section id="wheels">
-    <h2>Колёса и шины</h2>
-    {% if wheels %}
-        <ul>
-        {% for p in wheels %}
-            <li><a href="{% url 'product_detail' 'wheel' p.pk %}">{{ p.name }}</a>
-                — {{ p.price }} ₽ ({{ p.get_condition_display }})</li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>Пусто.</p>
-    {% endif %}
-</section>
+    </div>
+{% else %}
+    <div class="alert alert-info">В этом разделе пока пусто.</div>
+{% endif %}
 {% endblock %}

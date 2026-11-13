@@ -1,22 +1,72 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Spare Parts{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
+
     {% block head %}{% endblock %}
 </head>
-<body>
-    <header>
-        <a href="{% url 'index' %}">Каталог</a>
-        | <a href="/panel/">Панель управления</a>
-        | <a href="/admin/">Django-админка</a>
-    </header>
-    <main>
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <i class="bi bi-gear-fill"></i> Spare Parts
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav" aria-controls="navbarNav"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-1 {% if active_kind == 'auto' %}active{% endif %}"
+                           href="/?kind=auto">
+                            <i class="bi bi-car-front-fill"></i> Авто
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-1 {% if active_kind == 'moto' %}active{% endif %}"
+                           href="/?kind=moto">
+                            <i class="bi bi-bicycle"></i> Мото
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-1 {% if active_kind == 'wheel' %}active{% endif %}"
+                           href="/?kind=wheel">
+                            <i class="bi bi-disc"></i> Колёса
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Каталог</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/panel/">Панель</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/">Админка</a></li>
+                </ul>
+            </div>
+        </div>
+        
+    </nav>
+
+    <main class="container my-4 flex-grow-1">
         {% block content %}{% endblock %}
     </main>
-    <footer>
-        {% block footer %}Spare Parts App{% endblock %}
+
+    <footer class="bg-light py-3 mt-auto">
+        <div class="container text-muted">
+            {% block footer %}Spare Parts App{% endblock %}
+        </div>
     </footer>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+    {% block scripts %}{% endblock %}
 </body>
 </html>
