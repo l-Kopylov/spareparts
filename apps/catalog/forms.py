@@ -52,7 +52,7 @@ class BasePartForm(forms.ModelForm):
                 f"Описание длиннее {DESCRIPTION_LIMIT} символов (лимит Авито)")
         return d
 
-    def clean(self):
+
         cleaned = super().clean()
         # при редактировании можно не перекладывать фото: они уже у товара
         if not self.instance.pk and not self.files.getlist("photos"):

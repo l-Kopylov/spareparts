@@ -31,3 +31,6 @@ exports/
 
 # Docker (если монтируешь локально)
 pgdata/
+.coverage
+htmlcov/
+.pytest_cache/
