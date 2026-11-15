@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ads formatVersion="3" target="Avito.ru">
+    <Ad><Id>auto-seed-001</Id><Title>Двигатель Toyota Camry 2.5</Title><Description>Б/у, пробег 80 тыс. км. Проверен, без стуков.</Description><Price>85000</Price><Category>Двигатель</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-002</Id><Title>Бампер передний Kia Rio</Title><Description>Новый, оригинал. В упаковке.</Description><Price>12000</Price><Category>Кузов</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>auto-seed-003</Id><Title>Фара левая Hyundai Solaris</Title><Description>Б/у, крепления целые, регулировка работает.</Description><Price>6500</Price><Category>Оптика</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-004</Id><Title>Суппорт тормозной VW Passat</Title><Description>Новый, аналог TRW.</Description><Price>4500</Price><Category>Тормозная система</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>auto-seed-005</Id><Title>Амортизатор задний Skoda Octavia</Title><Description>Новый, газомасляный.</Description><Price>3200</Price><Category>Подвеска</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>auto-seed-006</Id><Title>Радиатор охлаждения Ford Focus</Title><Description>Б/у, без течей.</Description><Price>5500</Price><Category>Охлаждение</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-007</Id><Title>Генератор Renault Logan</Title><Description>Б/у, проверен на стенде.</Description><Price>4000</Price><Category>Электрика</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-008</Id><Title>Крыло переднее правое Mazda 6</Title><Description>Б/у, есть небольшой скол.</Description><Price>3500</Price><Category>Кузов</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-009</Id><Title>Стартер Lada Vesta</Title><Description>Новый, оригинал.</Description><Price>6000</Price><Category>Электрика</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>auto-seed-010</Id><Title>Турбина 1.4 TSI</Title><Description>Б/у, без люфта.</Description><Price>25000</Price><Category>Двигатель</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-011</Id><Title>Коробка передач АКПП</Title><Description>Toyota, 6 ступеней, б/у.</Description><Price>45000</Price><Category>Трансмиссия</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-012</Id><Title>Сцепление комплект</Title><Description>Luk, новый, для VW Golf.</Description><Price>8500</Price><Category>Трансмиссия</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>auto-seed-013</Id><Title>Рулевая рейка Ford Mondeo</Title><Description>Б/у, без люфта.</Description><Price>9000</Price><Category>Подвеска</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-014</Id><Title>Бампер задний Toyota RAV4</Title><Description>Б/у, цвет серый.</Description><Price>11000</Price><Category>Кузов</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-015</Id><Title>Дверь левая передняя</Title><Description>Hyundai Tucson, б/у.</Description><Price>14000</Price><Category>Кузов</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-016</Id><Title>Компрессор кондиционера</Title><Description>Nissan Qashqai, б/у.</Description><Price>7500</Price><Category>Охлаждение</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-017</Id><Title>Бензонасос Mitsubishi</Title><Description>Новый, оригинал.</Description><Price>5500</Price><Category>Топливная система</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>auto-seed-018</Id><Title>Глушитель задний</Title><Description>Lada Granta, новый.</Description><Price>3800</Price><Category>Выхлоп</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>auto-seed-019</Id><Title>Блок управления двигателем</Title><Description>Ford Focus, б/у, проверен.</Description><Price>8000</Price><Category>Электроника (блоки управления)</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>auto-seed-020</Id><Title>Зеркало боковое левое</Title><Description>Kia Sportage, с подогревом.</Description><Price>4200</Price><Category>Кузов</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+</Ads>

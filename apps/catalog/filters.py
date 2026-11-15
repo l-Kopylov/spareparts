@@ -66,15 +66,14 @@ class WheelFilter(BasePartFilter):
     season = filters.ChoiceFilter(choices=SEASONS, label="Сезонность")
     rim_type = filters.ChoiceFilter(choices=RIM_TYPES, label="Тип диска")
 
-    # шины
-    tire_width = filters.ChoiceFilter(choices=_choices(CAR_TIRE_WIDTHS + MOTO_TIRE_WIDTHS), label="Ширина шины")
-    tire_profile = filters.ChoiceFilter(choices=_choices(CAR_TIRE_PROFILES + MOTO_TIRE_PROFILES), label="Профиль")
-    tire_diameter = filters.ChoiceFilter(choices=_choices(CAR_TIRE_DIAMETERS + MOTO_TIRE_DIAMETERS), label="Диаметр шины")
-
-    # диски
-    rim_diameter = filters.ChoiceFilter(choices=_choices(RIM_DIAMETERS + MOTO_RIM_DIAMETERS), label="Диаметр диска")
-    pcd_bolt_count = filters.ChoiceFilter(choices=_choices(BOLT_COUNTS), label="Кол-во болтов")
-    pcd_diameter = filters.ChoiceFilter(choices=_choices(PCD_DIAMETERS), label="PCD")
+    # числовые — NumberFilter (сравнивает как число)
+    tire_width = filters.NumberFilter(field_name="tire_width", lookup_expr="exact", label="Ширина шины")
+    tire_profile = filters.NumberFilter(field_name="tire_profile", lookup_expr="exact", label="Профиль")
+    tire_diameter = filters.NumberFilter(field_name="tire_diameter", lookup_expr="exact", label="Диаметр шины")
+    rim_width = filters.NumberFilter(field_name="rim_width", lookup_expr="exact", label="Ширина диска")
+    rim_diameter = filters.NumberFilter(field_name="rim_diameter", lookup_expr="exact", label="Диаметр диска")
+    pcd_bolt_count = filters.NumberFilter(field_name="pcd_bolt_count", lookup_expr="exact", label="Кол-во болтов")
+    pcd_diameter = filters.NumberFilter(field_name="pcd_diameter", lookup_expr="exact", label="PCD")
 
     class Meta:
         model = Wheel

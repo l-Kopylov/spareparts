@@ -24,6 +24,13 @@ MAPPER_BY_MODEL = {
     MotoPart: MotoPartMapper,
 }
 
+# после MAPPER_BY_MODEL
+IMPORTER_BY_KIND = {
+    "wheel": (Wheel, WheelMapper),
+    "auto": (AutoPart, AutoPartMapper),
+    "moto": (MotoPart, MotoPartMapper),
+}
+
 
 class AvitoXmlExporter(BaseExporter):
     """Экспорт списка моделей (Wheel/AutoPart/MotoPart) в XML-фид Авито."""
@@ -78,17 +85,22 @@ class AvitoXmlImporter(BaseImporter):
             ))
         return items
 
-    def import_to_db(self, items: list[FeedItem], batch_name: str = "") -> ImportResult:
-        """Записать FeedItem'ы в БД (Wheel, upsert по external_id)."""
+    def import_to_db(self, items: list[FeedItem], batch_name: str = "",
+                     kind: str = "wheel") -> ImportResult:
+        """Записать FeedItem'ы в БД (model/mapper по kind). upsert по external_id."""
         from django.db import transaction
         from ..validators import validate_feed_item
+
+        if kind not in IMPORTER_BY_KIND:
+            raise ValueError(f"Неизвестный kind: {kind}")
+        model, mapper = IMPORTER_BY_KIND[kind]
 
         result = ImportResult(total=len(items))
 
         try:
             with transaction.atomic():
                 for i, item in enumerate(items, start=1):
-                    errs = validate_feed_item(item)
+                    errs = validate_feed_item(item, kind=kind)
                     if errs:
                         result.skipped += 1
                         result.errors.append({
@@ -100,8 +112,8 @@ class AvitoXmlImporter(BaseImporter):
 
                     try:
                         with transaction.atomic():
-                            data = WheelMapper.from_feed_item(item, batch_name=batch_name)
-                            _, created = Wheel.objects.update_or_create(
+                            data = mapper.from_feed_item(item, batch_name=batch_name)
+                            _, created = model.objects.update_or_create(
                                 external_id=item.external_id,
                                 defaults=data,
                             )

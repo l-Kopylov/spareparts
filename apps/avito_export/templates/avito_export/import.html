@@ -1,23 +1,44 @@
-cat > apps/avito_export/templates/avito_export/import.html <<'EOF'
+
 {% extends "adminpanel/base_panel.html" %}
 
-{% block title %}Импорт Авито — Spare Parts{% endblock %}
+{% block title %}Импорт Авито ({{ kind }}) — Spare Parts{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3 mb-0"><i class="bi bi-upload"></i> Импорт Авито (XML)</h1>
+    <h1 class="h3 mb-0"><i class="bi bi-upload"></i> Импорт Авито</h1>
     <a href="{% url 'panel_index' %}" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left"></i> В панель
     </a>
 </div>
 
+{# ===== ВЫБОР ТИПА (kind) ===== #}
+<div class="mb-4">
+    <div class="btn-group" role="group" aria-label="Тип импорта">
+        <a href="{% url 'avito_import_kind' 'wheel' %}"
+           class="btn {% if kind == 'wheel' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <i class="bi bi-disc"></i> Колёса
+        </a>
+        <a href="{% url 'avito_import_kind' 'auto' %}"
+           class="btn {% if kind == 'auto' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <i class="bi bi-car-front-fill"></i> Авто
+        </a>
+        <a href="{% url 'avito_import_kind' 'moto' %}"
+           class="btn {% if kind == 'moto' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            <i class="bi bi-bicycle"></i> Мото
+        </a>
+    </div>
+    <span class="ms-2 text-muted small">Файл должен содержать категории для <strong>{{ kind }}</strong>.</span>
+</div>
+
+{# ===== ОШИБКА ===== #}
 {% if error %}
 <div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> {{ error }}</div>
 {% endif %}
 
+{# ===== ОТЧЁТ ===== #}
 {% if result %}
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-white"><i class="bi bi-clipboard-check"></i> Отчёт об импорте</div>
+    <div class="card-header bg-white"><i class="bi bi-clipboard-check"></i> Отчёт об импорте ({{ kind }})</div>
     <div class="card-body">
         <div class="row g-2 mb-3">
             <div class="col"><div class="border rounded p-2 text-center"><div class="text-muted small">Всего</div><div class="fs-5 fw-bold">{{ result.total }}</div></div></div>
@@ -44,23 +65,33 @@ cat > apps/avito_export/templates/avito_export/import.html <<'EOF'
 </div>
 {% endif %}
 
+{# ===== ФОРМА ЗАГРУЗКИ ===== #}
 <div class="card shadow-sm" style="max-width: 600px;">
-    <div class="card-header bg-white"><i class="bi bi-file-earmark-xml"></i> Загрузить XML</div>
+    <div class="card-header bg-white"><i class="bi bi-file-earmark-xml"></i> Загрузить XML ({{ kind }})</div>
     <div class="card-body">
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
+            <input type="hidden" name="kind" value="{{ kind }}">
+
             <div class="mb-3">
                 <label class="form-label">Серия засева (поставщик)</label>
                 <input type="text" name="batch_name" class="form-control"
                        placeholder="ИП Пупкин, ООО Рога и Копыта 2" value="ИП Пупкин">
                 <div class="form-text">Попадёт в поле batch_name у товаров.</div>
             </div>
+
             <div class="mb-3">
                 <label class="form-label">Файл .xml</label>
                 <input type="file" name="file" accept=".xml" class="form-control" required>
+                <div class="form-text">Категории в файле должны соответствовать <strong>{{ kind }}</strong>.</div>
             </div>
-            <button type="submit" class="btn btn-primary"><i class="bi bi-upload"></i> Импортировать</button>
-            <a href="{% url 'avito_export_page' %}" class="btn btn-outline-success"><i class="bi bi-download"></i> Выгрузка</a>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-upload"></i> Импортировать
+            </button>
+            <a href="{% url 'avito_export_page' %}" class="btn btn-outline-success">
+                <i class="bi bi-download"></i> Выгрузка
+            </a>
         </form>
     </div>
 </div>

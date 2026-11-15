@@ -4,6 +4,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
+from django.core.paginator import Paginator
 
 from apps.catalog.forms import AutoPartForm, MotoPartForm, WheelForm, PartPhoto
 from apps.catalog.models import AutoPart, MotoPart, Wheel
@@ -48,13 +49,28 @@ def _ctx(kind, form, instance=None):
     return ctx
 
 
+
+
 @staff_member_required
 def panel_index(request):
+    """Список товаров с табами (wheel/auto/moto) и пагинацией."""
+    kind = request.GET.get("kind", "wheel")
+    if kind not in ("wheel", "auto", "moto"):
+        kind = "wheel"
+
+    page = request.GET.get("page", 1)
+
+    model, _, title = REGISTRY[kind]
+    qs = model.objects.order_by("-created_at")
+
+    paginator = Paginator(qs, 20)  # 20 на страницу
+    page_obj = paginator.get_page(page)
+
     return render(request, "adminpanel/index.html", {
-        "auto_parts": AutoPart.objects.order_by("-created_at"),
-        "moto_parts": MotoPart.objects.order_by("-created_at"),
-        "wheels": Wheel.objects.order_by("-created_at"),
-        "report_url": "/panel/avito/report/",
+        "kind": kind,
+        "title": title,
+        "page_obj": page_obj,
+        "total": qs.count(),
     })
 
 

@@ -53,10 +53,12 @@ def export_view(request, kind):
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
 
-
 @staff_member_required
-def import_view(request):
-    """Загрузить XML-фид и записать в БД. Показать отчёт."""
+def import_view(request, kind="wheel"):
+    """Загрузить XML-фид для kind (wheel/auto/moto). Показать отчёт."""
+    if kind not in ("wheel", "auto", "moto"):
+        return HttpResponse("Неизвестный тип", status=404)
+
     result = None
     error = None
 
@@ -72,20 +74,21 @@ def import_view(request):
                 items = importer.parse(f)
                 batch_name = request.POST.get("batch_name", "").strip() or "Без названия"
 
-                logger.info("import_upload user=%s filename=%s size=%d batch=%r rows=%d",
-                            request.user.username, f.name, f.size, batch_name, len(items))
+                logger.info("import_upload user=%s kind=%s filename=%s size=%d batch=%r rows=%d",
+                            request.user.username, kind, f.name, f.size, batch_name, len(items))
 
-                result = importer.import_to_db(items, batch_name=batch_name)
+                result = importer.import_to_db(items, batch_name=batch_name, kind=kind)
 
-                logger.info("import_done user=%s total=%d created=%d updated=%d skipped=%d",
-                            request.user.username, result.total, result.created,
+                logger.info("import_done user=%s kind=%s total=%d created=%d updated=%d skipped=%d",
+                            request.user.username, kind, result.total, result.created,
                             result.updated, result.skipped)
             except Exception as e:
-                logger.error("import_error user=%s filename=%s",
-                             request.user.username, f.name, exc_info=True)
+                logger.error("import_error user=%s kind=%s filename=%s",
+                             request.user.username, kind, f.name, exc_info=True)
                 error = f"Ошибка импорта: {e}"
 
     return render(request, "avito_export/import.html", {
         "result": result,
         "error": error,
+        "kind": kind,
     })

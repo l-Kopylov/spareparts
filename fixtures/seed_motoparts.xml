@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ads formatVersion="3" target="Avito.ru">
+    <Ad><Id>moto-seed-001</Id><Title>Двигатель Yamaha YZF-R1</Title><Description>Б/у, пробег 30 тыс. км. Проверен, без стуков.</Description><Price>120000</Price><Category>Двигатель</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-002</Id><Title>ЦПГ Honda CBR600</Title><Description>Новый, оригинал. В упаковке.</Description><Price>45000</Price><Category>ЦПГ</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>moto-seed-003</Id><Title>Вариатор Suzuki Burgman</Title><Description>Б/у, без люфта.</Description><Price>18000</Price><Category>Трансмиссия / вариатор</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-004</Id><Title>Рама Kawasaki Ninja</Title><Description>Б/у, без трещин, с документами.</Description><Price>55000</Price><Category>Рама</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-005</Id><Title>Амортизатор задний BMW S1000RR</Title><Description>Новый, газомасляный.</Description><Price>25000</Price><Category>Подвеска</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>moto-seed-006</Id><Title>Суппорт тормозной Ducati</Title><Description>Б/у, проверен.</Description><Price>12000</Price><Category>Тормозная система</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-007</Id><Title>Генератор Honda CB500</Title><Description>Б/у, проверен на стенде.</Description><Price>8000</Price><Category>Электрика</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-008</Id><Title>Пластик боковой Yamaha R6</Title><Description>Б/у, есть небольшой скол.</Description><Price>6500</Price><Category>Пластик / обвес</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-009</Id><Title>Стартер Suzuki GSX-R</Title><Description>Новый, оригинал.</Description><Price>7000</Price><Category>Электрика</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>moto-seed-010</Id><Title>Поршень Kawasaki ZX-6R</Title><Description>Новый, 67 мм.</Description><Price>5500</Price><Category>ЦПГ</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>moto-seed-011</Id><Title>Коробка передач Yamaha MT-07</Title><Description>Б/у, без люфта.</Description><Price>22000</Price><Category>Трансмиссия / вариатор</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-012</Id><Title>Вилка передняя Honda CBR</Title><Description>Б/у, без течей.</Description><Price>15000</Price><Category>Подвеска</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-013</Id><Title>Бак топливный Suzuki SV650</Title><Description>Б/у, без вмятин.</Description><Price>9500</Price><Category>Пластик / обвес</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-014</Id><Title>Фара передняя Yamaha FZ6</Title><Description>Б/у, крепления целые.</Description><Price>4800</Price><Category>Электрика</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-015</Id><Title>Цепь приводная DID</Title><Description>Новая, 520, 120 звеньев.</Description><Price>6500</Price><Category>Трансмиссия / вариатор</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>moto-seed-016</Id><Title>Тормозной диск передний</Title><Description>Brembo, новый, для Ducati.</Description><Price>18000</Price><Category>Тормозная система</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>moto-seed-017</Id><Title>Радиатор охлаждения Kawasaki</Title><Description>Б/у, без течей.</Description><Price>8500</Price><Category>Охлаждение</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-018</Id><Title>Сиденье водителя Honda</Title><Description>Б/у, без порезов.</Description><Price>3500</Price><Category>Прочее</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+    <Ad><Id>moto-seed-019</Id><Title>Глушитель Akrapovic</Title><Description>Новый, для Yamaha R1.</Description><Price>35000</Price><Category>Выхлоп</Category><Address>Москва</Address><Condition>Новое</Condition></Ad>
+    <Ad><Id>moto-seed-020</Id><Title>Блок управления двигателем</Title><Description>BMW, б/у, проверен.</Description><Price>28000</Price><Category>Электрика</Category><Address>Москва</Address><Condition>Б/у</Condition></Ad>
+</Ads>
