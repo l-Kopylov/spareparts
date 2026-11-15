@@ -89,6 +89,17 @@ class PartBase(models.Model):
     class Meta:
         abstract = True
 
+        # Серия засева: откуда пришёл товар (ИП Пупкин, ООО Рога и Копыта 2)
+    batch_name = models.CharField(
+        "Серия засева", max_length=200, blank=True, db_index=True,
+        help_text="Источник/поставщик, например: ИП Пупкин, ООО Рога и Копыта 2"
+    )
+    # Внешний ID для upsert при импорте (Id из Авито)
+    external_id = models.CharField(
+        "Внешний ID", max_length=100, blank=True, db_index=True,
+        help_text="Id из фида Авито, для обновления без дублей"
+    )    
+
 
 # ---------- Деталь для авто ----------
 

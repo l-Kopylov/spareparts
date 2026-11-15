@@ -119,6 +119,14 @@ class MotoPartForm(BasePartForm):
             label="Год от", choices=[("", "—")] + years, required=False)
         self.fields["year_to"] = forms.ChoiceField(
             label="Год до", choices=[("", "—")] + years, required=False)
+        
+    def clean_year_from(self):
+        v = self.cleaned_data.get("year_from")
+        return int(v) if v not in ("", None) else None
+
+    def clean_year_to(self):
+        v = self.cleaned_data.get("year_to")
+        return int(v) if v not in ("", None) else None   
 
 
 class WheelForm(BasePartForm):

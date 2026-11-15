@@ -33,14 +33,22 @@
             </ul>
             <ul class="navbar-nav">
                 <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-1" href="{% url 'avito_import' %}">
+                        <i class="bi bi-upload"></i> Импорт
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-1" href="{% url 'avito_export_page' %}">
+                        <i class="bi bi-download"></i> Выгрузка
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link d-flex align-items-center gap-1" href="{% url 'index' %}">
                         <i class="bi bi-shop"></i> Каталог
                     </a>
                 </li>
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/logout/">Выйти</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/logout/">Выйти</a></li>
                 {% endif %}
             </ul>
         </div>

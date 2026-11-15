@@ -5,9 +5,24 @@ from django.contrib.auth import get_user_model
 
 @pytest.fixture
 def staff_user(db):
-    U = get_user_model()
-    return U.objects.create_user("staff", password="pass", is_staff=True)
+    """Staff с правами на catalog (add/change/delete/view)."""
+    from django.contrib.auth.models import Permission
+    from django.contrib.contenttypes.models import ContentType
+    from apps.catalog.models import Wheel, AutoPart, MotoPart, PartPhoto
 
+    U = get_user_model()
+    user = U.objects.create_user("staff", password="pass", is_staff=True)
+
+    # выдаём права на все catalog-модели
+    for model in (Wheel, AutoPart, MotoPart, PartPhoto):
+        ct = ContentType.objects.get_for_model(model)
+        name = model._meta.model_name
+        perms = Permission.objects.filter(content_type=ct, codename__in=[
+            f"add_{name}", f"change_{name}", f"delete_{name}", f"view_{name}",
+        ])
+        user.user_permissions.add(*perms)
+
+    return user
 
 @pytest.fixture
 def superuser(db):

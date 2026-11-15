@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ads formatVersion="3" target="Avito.ru">
+    <Ad>
+        <Id>wheel-1</Id>
+        <Title>Шина 205/55 R16</Title>
+        <Description>Летняя шина, б/у, остаток 4 мм</Description>
+        <Price>3000</Price>
+        <Category>Колёса и шины</Category>
+        <Address>Москва</Address>
+        <Condition>Б/у</Condition>
+    </Ad>
+</Ads>

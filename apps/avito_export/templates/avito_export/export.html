@@ -1,0 +1,32 @@
+{% extends "adminpanel/base_panel.html" %}
+
+{% block title %}Выгрузка Авито — Spare Parts{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0"><i class="bi bi-download"></i> Выгрузка Авито (XML)</h1>
+    <a href="{% url 'panel_index' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> В панель
+    </a>
+</div>
+
+<div class="card shadow-sm" style="max-width: 700px;">
+    <div class="card-header bg-white"><i class="bi bi-list-check"></i> Что выгрузить?</div>
+    <div class="card-body">
+        <p class="text-muted">Каждый тип — отдельный XML (у Авито разные категории и поля).</p>
+        <div class="d-grid gap-2">
+            {% for kind, label, icon, count in kinds %}
+            <a href="{% url 'avito_export' kind %}" class="btn btn-outline-primary btn-lg text-start d-flex justify-content-between align-items-center">
+                <span><i class="bi {{ icon }}"></i> {{ label }}</span>
+                <span class="badge bg-primary rounded-pill">{{ count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="card-footer bg-white">
+        <a href="{% url 'avito_import' %}" class="btn btn-outline-success">
+            <i class="bi bi-upload"></i> Импорт XML
+        </a>
+    </div>
+</div>
+{% endblock %}

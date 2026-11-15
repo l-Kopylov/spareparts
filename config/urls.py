@@ -3,8 +3,10 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("panel/avito/", include("apps.avito_export.urls")),
     path("", include("apps.showcase.urls")),
     path("panel/", include("apps.adminpanel.urls")),
 ]
