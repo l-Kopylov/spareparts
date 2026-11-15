@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "adminpanel/base_panel.html" %}
 {% block content %}
 <h1>Удалить «{{ item.name }}»?</h1>
 <form method="post">{% csrf_token %}

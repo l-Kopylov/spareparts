@@ -1,6 +1,8 @@
-from django.shortcuts import get_object_or_404, render
-from django.http import Http404
 
+from django.http import Http404
+from django.shortcuts import get_object_or_404, render
+
+from apps.catalog.filters import AutoPartFilter, MotoPartFilter, WheelFilter
 from apps.catalog.models import AutoPart, MotoPart, Wheel
 
 MODELS = {
@@ -9,6 +11,11 @@ MODELS = {
     "wheel": Wheel,
 }
 
+FILTERS = {
+    "auto": AutoPartFilter,
+    "moto": MotoPartFilter,
+    "wheel": WheelFilter,
+}
 
 KIND_LABELS = {
     "auto": "Детали для авто",
@@ -23,12 +30,16 @@ def index(request):
         kind = "auto"
 
     model = MODELS[kind]
-    items = model.objects.filter(is_active=True).order_by("-created_at")
+    qs = model.objects.filter(is_active=True).order_by("-created_at")
+
+    filter_cls = FILTERS[kind]
+    f = filter_cls(request.GET, queryset=qs)
 
     ctx = {
         "kind": kind,
         "kind_label": KIND_LABELS[kind],
-        "items": items,
+        "items": f.qs,
+        "filter": f,
     }
     return render(request, "showcase/index.html", ctx)
 
@@ -38,4 +49,4 @@ def product_detail(request, kind, pk):
     if model is None:
         raise Http404("Неизвестный тип детали")
     item = get_object_or_404(model, pk=pk, is_active=True)
-    return render(request, "showcase/product_detail.html", {"item": item})
+    return render(request, "showcase/product_detail.html", {"item": item, "kind": kind})

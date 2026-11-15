@@ -1,15 +1,42 @@
+from functools import wraps
+
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.catalog.forms import AutoPartForm, MotoPartForm, WheelForm, PartPhoto
 from apps.catalog.models import AutoPart, MotoPart, Wheel
 
-# kind -> (модель, форма, человекочитаемое название)
 REGISTRY = {
     "auto":  (AutoPart, AutoPartForm, "Деталь для авто"),
     "moto":  (MotoPart, MotoPartForm, "Деталь для мото"),
     "wheel": (Wheel, WheelForm, "Колёса и шины"),
 }
+
+KIND_PERM = {
+    "auto": "autopart",
+    "moto": "motopart",
+    "wheel": "wheel",
+}
+
+
+def require_part_perm(action):
+    """Проверяет право catalog.<action>_<model> в зависимости от kind."""
+    def decorator(view_func):
+        @wraps(view_func)
+        @login_required
+        def _wrapped(request, *args, **kwargs):
+            kind = kwargs.get("kind")
+            model_name = KIND_PERM.get(kind)
+            if not model_name:
+                raise PermissionDenied("Неизвестный тип детали")
+            perm = f"catalog.{action}_{model_name}"
+            if not request.user.has_perm(perm):
+                raise PermissionDenied(f"Нет права: {perm}")
+            return view_func(request, *args, **kwargs)
+        return _wrapped
+    return decorator
 
 
 def _ctx(kind, form, instance=None):
@@ -31,7 +58,7 @@ def panel_index(request):
     })
 
 
-@staff_member_required
+@require_part_perm("add")
 def new_item(request, kind):
     model, form_cls, _ = REGISTRY[kind]
     if request.method == "POST":
@@ -44,7 +71,7 @@ def new_item(request, kind):
     return render(request, f"adminpanel/{kind}_form.html", _ctx(kind, form))
 
 
-@staff_member_required
+@require_part_perm("change")
 def edit_item(request, kind, pk):
     model, form_cls, _ = REGISTRY[kind]
     item = get_object_or_404(model, pk=pk)
@@ -58,7 +85,7 @@ def edit_item(request, kind, pk):
     return render(request, f"adminpanel/{kind}_form.html", _ctx(kind, form, item))
 
 
-@staff_member_required
+@require_part_perm("delete")
 def delete_item(request, kind, pk):
     model, _, _ = REGISTRY[kind]
     item = get_object_or_404(model, pk=pk)
@@ -69,9 +96,8 @@ def delete_item(request, kind, pk):
                   {"kind": kind, "item": item})
 
 
-@staff_member_required
+@require_part_perm("change")
 def photo_delete(request, kind, pk, photo_id):
-    # удаление отдельного фото при редактировании
     photo = get_object_or_404(PartPhoto, pk=photo_id, object_id=pk)
     if request.method == "POST":
         photo.image.delete(save=False)

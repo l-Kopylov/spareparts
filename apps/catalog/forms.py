@@ -45,6 +45,20 @@ class BasePartForm(forms.ModelForm):
             self.fields["category"].queryset = Category.objects.filter(
                 scope=self.category_scope)
 
+                # Bootstrap-классы для всех полей
+        for name, field in self.fields.items():
+            w = field.widget
+            if isinstance(w, forms.CheckboxInput):
+                w.attrs.setdefault("class", "form-check-input")
+            elif isinstance(w, forms.CheckboxSelectMultiple):
+                w.attrs.setdefault("class", "form-check-input")
+            elif isinstance(w, forms.Select):
+                w.attrs.setdefault("class", "form-select")
+            elif isinstance(w, forms.FileInput):
+                w.attrs.setdefault("class", "form-control")
+            else:
+                w.attrs.setdefault("class", "form-control")    
+
     def clean_description(self):
         d = self.cleaned_data.get("description", "")
         if len(d) > DESCRIPTION_LIMIT:
@@ -96,6 +110,15 @@ class MotoPartForm(BasePartForm):
         super().__init__(*args, **kwargs)
         self.fields["part_type"] = forms.ChoiceField(
             label="Тип детали", choices=[(v, v) for v in PART_TYPES_MOTO])
+
+        # годы: выпадающий список от 1900 до текущего года
+        import datetime
+        current_year = datetime.date.today().year
+        years = [(y, str(y)) for y in range(current_year, 1899, -1)]
+        self.fields["year_from"] = forms.ChoiceField(
+            label="Год от", choices=[("", "—")] + years, required=False)
+        self.fields["year_to"] = forms.ChoiceField(
+            label="Год до", choices=[("", "—")] + years, required=False)
 
 
 class WheelForm(BasePartForm):
