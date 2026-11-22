@@ -77,7 +77,6 @@ def test_new_item_requires_login(client):
 
 
 # ---------- panel_index: контекст ----------
-
 @pytest.mark.django_db
 def test_panel_index_context(client, staff_user):
     from apps.catalog.tests.factories import (
@@ -89,10 +88,12 @@ def test_panel_index_context(client, staff_user):
     client.force_login(staff_user)
     r = client.get(reverse("panel_index"))
     assert r.status_code == 200
-    assert "auto_parts" in r.context
-    assert "moto_parts" in r.context
-    assert "wheels" in r.context
-    assert len(r.context["wheels"]) == 1
+    assert "kind" in r.context
+    assert "page_obj" in r.context
+    assert "total" in r.context
+    # по умолчанию — колёса
+    assert r.context["kind"] == "wheel"
+    assert r.context["total"] == 1
 
 
 # ---------- edit_item ----------

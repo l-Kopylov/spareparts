@@ -61,6 +61,19 @@ class AvitoXmlExporter(BaseExporter):
             ET.SubElement(ad, "Address").text = item.address
             ET.SubElement(ad, "Condition").text = item.condition
 
+            # Фото: публичные URL из PartPhoto.external_url
+            photos = getattr(obj, "photos", None)
+            if photos is not None:
+                urls = [
+                    p.external_url
+                    for p in photos.all()
+                    if p.external_url
+                ]
+                if urls:
+                    images_el = ET.SubElement(ad, "Images")
+                    for url in urls:
+                        ET.SubElement(images_el, "Image", {"url": url})
+
         return ET.tostring(root, encoding="utf-8", xml_declaration=True)
 
 

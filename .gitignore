@@ -34,3 +34,5 @@ pgdata/
 .coverage
 htmlcov/
 .pytest_cache/
+
+hhh.txt

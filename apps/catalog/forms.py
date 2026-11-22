@@ -75,8 +75,20 @@ class BasePartForm(forms.ModelForm):
 
     def save(self, commit=True):
         item = super().save(commit)
+        from apps.catalog.services.photo import PhotoService
+
         for f in self.files.getlist("photos"):
-            PartPhoto.objects.create(item=item, image=f)
+            photo = PartPhoto.objects.create(item=item, image=f)
+            # Пытаемся загрузить в S3 (если не получилось — фото остаётся локально)
+            try:
+                file_bytes = f.read()
+                f.seek(0)  # на случай, если Django ещё будет читать
+                url = PhotoService.process_and_upload(file_bytes)
+                photo.external_url = url
+                photo.save(update_fields=["external_url"])
+            except Exception:
+                # Не валим сохранение товара, если S3 недоступен
+                pass
         return item
 
 

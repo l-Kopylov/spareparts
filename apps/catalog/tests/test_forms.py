@@ -105,8 +105,11 @@ def test_auto_form_part_type_choices():
 
 @pytest.mark.django_db
 def test_moto_form_part_type_choices():
+    from apps.catalog.dicts import PART_TYPES_MOTO
     f = MotoPartForm()
-    assert len(f.fields["part_type"].choices) == 9
+    assert len(f.fields["part_type"].choices) == len(PART_TYPES_MOTO)
+    for val, label in f.fields["part_type"].choices:
+        assert val in PART_TYPES_MOTO
 
 @pytest.mark.django_db
 def test_wheel_form_rim_required():

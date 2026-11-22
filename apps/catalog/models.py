@@ -60,6 +60,7 @@ class PartPhoto(models.Model):
     item = GenericForeignKey("content_type", "object_id")
     image = models.ImageField("Фото", upload_to="products/")
     sort = models.PositiveSmallIntegerField("Порядок", default=0)
+    external_url = models.URLField("Публичный URL", blank=True, null=True)
 
     class Meta:
         ordering = ["sort", "id"]

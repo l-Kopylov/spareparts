@@ -171,3 +171,11 @@ LOGGING = {
         },
     },
 }
+
+# VK Cloud Object Storage
+VK_S3_ENDPOINT = os.environ.get("VK_S3_ENDPOINT", "")
+VK_S3_REGION = os.environ.get("VK_S3_REGION", "ru-msk")
+VK_S3_BUCKET = os.environ.get("VK_S3_BUCKET", "")
+VK_S3_ACCESS_KEY = os.environ.get("VK_S3_ACCESS_KEY", "")
+VK_S3_SECRET_KEY = os.environ.get("VK_S3_SECRET_KEY", "")
+VK_S3_PUBLIC_URL = os.environ.get("VK_S3_PUBLIC_URL", "")

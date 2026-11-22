@@ -14,7 +14,19 @@ def staff_user(db):
 
 @pytest.mark.django_db
 def test_import_post_ok(client, staff_user):
-    xml = b'<?xml version="1.0"?><Ads formatVersion="3" target="Avito.ru"><Ad><Id>wheel-x</Id><Title>T</Title><Description>D</Description><Price>100</Price><Category>C</Category><Address>A</Address></Ad></Ads>'
+    xml = (
+        '<?xml version="1.0"?>'
+        '<Ads formatVersion="3" target="Avito.ru">'
+        '<Ad>'
+        '<Id>wheel-x</Id>'
+        '<Title>T</Title>'
+        '<Description>D</Description>'
+        '<Price>100</Price>'
+        '<Category>Колёса и шины</Category>'
+        '<Address>A</Address>'
+        '</Ad>'
+        '</Ads>'
+    ).encode("utf-8")
     f = SimpleUploadedFile("test.xml", xml, content_type="application/xml")
     client.force_login(staff_user)
     r = client.post(reverse("avito_import"), {"file": f, "batch_name": "Тест"})
