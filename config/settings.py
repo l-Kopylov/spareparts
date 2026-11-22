@@ -31,12 +31,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "django_filters",
     "apps.catalog",
     "apps.showcase",
     "apps.adminpanel",
     "apps.avito_export",
+
 ]
 
 
@@ -49,6 +49,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append("debug_toolbar")
+    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": "debug_toolbar.middleware.show_toolbar_with_docker",
+    }
 
 ROOT_URLCONF = 'config.urls'
 

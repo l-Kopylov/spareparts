@@ -3,17 +3,21 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("panel/avito/", include("apps.avito_export.urls")),
-    path("", include("apps.showcase.urls")),
     path("panel/", include("apps.adminpanel.urls")),
+    path("", include("apps.showcase.urls")),
 ]
 
-
-# ... существующие urlpatterns ...
-
 if settings.DEBUG:
+    # django-debug-toolbar (только в DEBUG)
+    import debug_toolbar
+    urlpatterns = [
+        path("__debug__/", include(debug_toolbar.urls)),
+    ] + urlpatterns
+
+    # медиа и статика (только в DEBUG)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
+    if settings.STATICFILES_DIRS:
+        urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

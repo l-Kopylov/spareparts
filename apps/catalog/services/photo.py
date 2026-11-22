@@ -49,12 +49,13 @@ class PhotoService:
             aws_access_key_id=settings.VK_S3_ACCESS_KEY,
             aws_secret_access_key=settings.VK_S3_SECRET_KEY,
             region_name=settings.VK_S3_REGION,
-            config=Config(s3={"addressing_style": "path"}),
+            config=Config(s3={"addressing_style": "virtual"}),
         )
 
     @classmethod
     def upload(cls, file_bytes: bytes, object_key: str) -> str:
-        """Загрузить bytes в S3, вернуть публичный URL."""
+        logger.info("s3_upload_start key=%s size=%d bucket=%s",
+                    object_key, len(file_bytes), settings.VK_S3_BUCKET)
         client = cls._get_client()
         client.put_object(
             Bucket=settings.VK_S3_BUCKET,
@@ -63,12 +64,15 @@ class PhotoService:
             ACL="public-read",
             ContentType="image/jpeg",
         )
-        return f"{settings.VK_S3_PUBLIC_URL}/{object_key}"
+        url = f"{settings.VK_S3_PUBLIC_URL}/{object_key}"
+        logger.info("s3_upload_ok key=%s url=%s", object_key, url)
+        return url
 
     @classmethod
     def process_and_upload(cls, file_bytes: bytes, prefix: str = "products") -> str:
-        """Оптимизировать + загрузить. Вернуть публичный URL."""
+        logger.info("photo_process_start size=%d", len(file_bytes))
         optimized = cls.optimize(file_bytes)
+        logger.info("photo_optimized size=%d", len(optimized))
         key = f"{prefix}/{uuid4().hex}.jpg"
         try:
             url = cls.upload(optimized, key)

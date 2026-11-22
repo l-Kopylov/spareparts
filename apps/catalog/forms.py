@@ -66,7 +66,7 @@ class BasePartForm(forms.ModelForm):
                 f"Описание длиннее {DESCRIPTION_LIMIT} символов (лимит Авито)")
         return d
 
-
+    def clean(self):
         cleaned = super().clean()
         # при редактировании можно не перекладывать фото: они уже у товара
         if not self.instance.pk and not self.files.getlist("photos"):
@@ -74,21 +74,38 @@ class BasePartForm(forms.ModelForm):
         return cleaned
 
     def save(self, commit=True):
+        import logging
+        logger = logging.getLogger("avito_export")
+
+        logger.info("form_save_start files=%d instance_pk=%s",
+                    len(self.files.getlist("photos")), self.instance.pk)
+
         item = super().save(commit)
         from apps.catalog.services.photo import PhotoService
 
-        for f in self.files.getlist("photos"):
+        files = self.files.getlist("photos")
+        logger.info("form_save_after_super item_pk=%s files=%d", item.pk, len(files))
+
+        for f in files:
+            logger.info("form_save_file name=%s size=%s content_type=%s",
+                        f.name, f.size, f.content_type)
             photo = PartPhoto.objects.create(item=item, image=f)
-            # Пытаемся загрузить в S3 (если не получилось — фото остаётся локально)
+            logger.info("form_save_photo_created photo_pk=%s image=%s",
+                        photo.pk, photo.image.name)
+
             try:
+                f.seek(0)
                 file_bytes = f.read()
-                f.seek(0)  # на случай, если Django ещё будет читать
+                f.seek(0)
+                logger.info("form_save_file_bytes len=%d", len(file_bytes))
                 url = PhotoService.process_and_upload(file_bytes)
+                logger.info("form_save_upload_ok url=%s", url)
                 photo.external_url = url
                 photo.save(update_fields=["external_url"])
+                logger.info("form_save_url_saved photo_pk=%s url=%s", photo.pk, url)
             except Exception:
-                # Не валим сохранение товара, если S3 недоступен
-                pass
+                logger.exception("form_save_upload_failed photo_pk=%s", photo.pk)
+
         return item
 
 
