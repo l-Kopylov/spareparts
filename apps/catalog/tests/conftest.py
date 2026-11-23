@@ -1,5 +1,8 @@
 import pytest
 from django.core.management import call_command
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils.datastructures import MultiValueDict
+
 
 
 @pytest.fixture
@@ -24,3 +27,17 @@ def car_model(db):
 def moto_model(db):
     from apps.catalog.models import MotoModel
     return MotoModel.objects.create(make="Yamaha", model="YZF-R1")
+
+
+GIF_BYTES = bytes.fromhex(
+    "47494638396101000100800000ffffff00000021f90401000000002c00000000010001000002024401003b"
+)
+
+@pytest.fixture
+def photo_file():
+    """Фейковое фото (GIF 1×1) для форм, где фото обязательно."""
+    return SimpleUploadedFile("test.gif", GIF_BYTES, content_type="image/gif")
+
+@pytest.fixture
+def photos_files(photo_file):
+    return MultiValueDict({"photos": [photo_file]})

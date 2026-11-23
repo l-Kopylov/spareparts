@@ -10,10 +10,7 @@ from .dicts import (DESCRIPTION_LIMIT, PART_TYPES_AUTO, PART_TYPES_MOTO,
                     MOTO_TIRE_WIDTHS, MOTO_TIRE_PROFILES,
                     MOTO_TIRE_DIAMETERS, MOTO_RIM_DIAMETERS,
                     WHEEL_FORM_FIELDS)
-
 from .models import AutoPart, MotoPart, Wheel, PartPhoto, Category
-
-DESCRIPTION_LIMIT = 3000
 
 
 class MultiFileInput(forms.FileInput):
@@ -37,15 +34,14 @@ class BasePartForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # описания с живым лимитом
+        # описание с живым лимитом
         self.fields["description"].widget.attrs.update(
             {"maxlength": DESCRIPTION_LIMIT, "rows": 4})
         # фильтруем категории по scope подкласса (если поле есть)
         if "category" in self.fields and self.category_scope:
             self.fields["category"].queryset = Category.objects.filter(
                 scope=self.category_scope)
-
-                # Bootstrap-классы для всех полей
+        # Bootstrap-классы для всех полей
         for name, field in self.fields.items():
             w = field.widget
             if isinstance(w, forms.CheckboxInput):
@@ -54,10 +50,8 @@ class BasePartForm(forms.ModelForm):
                 w.attrs.setdefault("class", "form-check-input")
             elif isinstance(w, forms.Select):
                 w.attrs.setdefault("class", "form-select")
-            elif isinstance(w, forms.FileInput):
-                w.attrs.setdefault("class", "form-control")
             else:
-                w.attrs.setdefault("class", "form-control")    
+                w.attrs.setdefault("class", "form-control")
 
     def clean_description(self):
         d = self.cleaned_data.get("description", "")
@@ -79,7 +73,6 @@ class BasePartForm(forms.ModelForm):
 
         logger.info("form_save_start files=%d instance_pk=%s",
                     len(self.files.getlist("photos")), self.instance.pk)
-
         item = super().save(commit)
         from apps.catalog.services.photo import PhotoService
 
@@ -87,19 +80,22 @@ class BasePartForm(forms.ModelForm):
         logger.info("form_save_after_super item_pk=%s files=%d", item.pk, len(files))
 
         for f in files:
-            logger.info("form_save_file name=%s size=%s content_type=%s",
-                        f.name, f.size, f.content_type)
+            # валидация: только изображения (иначе Pillow упадёт)
+            if not (f.content_type or "").startswith("image/"):
+                logger.warning("form_save_skip_non_image name=%s type=%s",
+                               f.name, f.content_type)
+                continue
+
             photo = PartPhoto.objects.create(item=item, image=f)
-            logger.info("form_save_photo_created photo_pk=%s image=%s",
-                        photo.pk, photo.image.name)
+            logger.debug("form_save_photo_created photo_pk=%s image=%s",
+                         photo.pk, photo.image.name)
 
             try:
                 f.seek(0)
                 file_bytes = f.read()
                 f.seek(0)
-                logger.info("form_save_file_bytes len=%d", len(file_bytes))
+                logger.debug("form_save_file_bytes len=%d", len(file_bytes))
                 url = PhotoService.process_and_upload(file_bytes)
-                logger.info("form_save_upload_ok url=%s", url)
                 photo.external_url = url
                 photo.save(update_fields=["external_url"])
                 logger.info("form_save_url_saved photo_pk=%s url=%s", photo.pk, url)
@@ -140,7 +136,7 @@ class MotoPartForm(BasePartForm):
         self.fields["part_type"] = forms.ChoiceField(
             label="Тип детали", choices=[(v, v) for v in PART_TYPES_MOTO])
 
-        # годы: выпадающий список от 1900 до текущего года
+        # годы: выпадающий список от текущего года до 1900
         import datetime
         current_year = datetime.date.today().year
         years = [(y, str(y)) for y in range(current_year, 1899, -1)]
@@ -148,14 +144,24 @@ class MotoPartForm(BasePartForm):
             label="Год от", choices=[("", "—")] + years, required=False)
         self.fields["year_to"] = forms.ChoiceField(
             label="Год до", choices=[("", "—")] + years, required=False)
-        
+
     def clean_year_from(self):
         v = self.cleaned_data.get("year_from")
-        return int(v) if v not in ("", None) else None
+        if v in ("", None):
+            return None
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            raise ValidationError("Некорректный год")
 
     def clean_year_to(self):
         v = self.cleaned_data.get("year_to")
-        return int(v) if v not in ("", None) else None   
+        if v in ("", None):
+            return None
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            raise ValidationError("Некорректный год")
 
 
 class WheelForm(BasePartForm):
@@ -178,20 +184,26 @@ class WheelForm(BasePartForm):
         "pcd_bolt_count", "pcd_diameter", "offset_et", "center_bore",
     )
 
+    # какие поля — числовые (даже если сейчас ChoiceField)
+    NUMERIC_FIELDS = {
+        "tire_width", "tire_profile", "tire_diameter",
+        "rim_width", "rim_diameter",
+        "pcd_bolt_count", "pcd_diameter", "offset_et", "center_bore",
+        "tread_remain",
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # определяем product_form: из POST, из instance или из initial
         pf = (
             self.data.get("product_form")
             or (self.instance.product_form if self.instance and self.instance.pk else None)
             or self.initial.get("product_form")
         )
-                # определяем vehicle_kind: из POST, из instance или из initial
         vk = (
             self.data.get("vehicle_kind")
             or (self.instance.vehicle_kind if self.instance and self.instance.pk else None)
             or self.initial.get("vehicle_kind")
-            or "car"  # по умолчанию — авто
+            or "car"
         )
         self._apply_choices(vk)
         self._apply_visibility(pf)
@@ -199,58 +211,40 @@ class WheelForm(BasePartForm):
     def _apply_choices(self, vehicle_kind):
         """Подменяет свободные числовые поля на ChoiceField из словарей."""
         is_car = (vehicle_kind == "car")
-
         tire_widths   = CAR_TIRE_WIDTHS   if is_car else MOTO_TIRE_WIDTHS
         tire_profiles = CAR_TIRE_PROFILES if is_car else MOTO_TIRE_PROFILES
         tire_diams    = CAR_TIRE_DIAMETERS if is_car else MOTO_TIRE_DIAMETERS
         rim_diams     = RIM_DIAMETERS     if is_car else MOTO_RIM_DIAMETERS
 
-        # (value, label) — value как строка, чтобы совпадало с тем, что придёт из POST
         def pairs(seq):
             return [(str(x), str(x)) for x in seq]
 
-        # ширина шины
         self.fields["tire_width"] = forms.ChoiceField(
             label=self.fields["tire_width"].label,
-            choices=[("", "—")] + pairs(tire_widths),
-            required=False,
-        )
-        # профиль
+            choices=[("", "—")] + pairs(tire_widths), required=False)
         self.fields["tire_profile"] = forms.ChoiceField(
             label=self.fields["tire_profile"].label,
-            choices=[("", "—")] + pairs(tire_profiles),
-            required=False,
-        )
-        # диаметр шины
+            choices=[("", "—")] + pairs(tire_profiles), required=False)
         self.fields["tire_diameter"] = forms.ChoiceField(
             label=self.fields["tire_diameter"].label,
-            choices=[("", "—")] + pairs(tire_diams),
-            required=False,
-        )
-        # ширина диска
+            choices=[("", "—")] + pairs(tire_diams), required=False)
         self.fields["rim_width"] = forms.ChoiceField(
             label=self.fields["rim_width"].label,
-            choices=[("", "—")] + pairs(RIM_WIDTHS),
-            required=False,
-        )
-        # диаметр диска
+            choices=[("", "—")] + pairs(RIM_WIDTHS), required=False)
         self.fields["rim_diameter"] = forms.ChoiceField(
             label=self.fields["rim_diameter"].label,
-            choices=[("", "—")] + pairs(rim_diams),
-            required=False,
-        )
-        # количество болтов
+            choices=[("", "—")] + pairs(rim_diams), required=False)
         self.fields["pcd_bolt_count"] = forms.ChoiceField(
             label=self.fields["pcd_bolt_count"].label,
-            choices=[("", "—")] + pairs(BOLT_COUNTS),
-            required=False,
-        )
-        # PCD
+            choices=[("", "—")] + pairs(BOLT_COUNTS), required=False)
         self.fields["pcd_diameter"] = forms.ChoiceField(
             label=self.fields["pcd_diameter"].label,
-            choices=[("", "—")] + pairs(PCD_DIAMETERS),
-            required=False,
-        )   
+            choices=[("", "—")] + pairs(PCD_DIAMETERS), required=False)
+
+        # Bootstrap-классы для подменённых полей
+        for name in ("tire_width", "tire_profile", "tire_diameter",
+                     "rim_width", "rim_diameter", "pcd_bolt_count", "pcd_diameter"):
+            self.fields[name].widget.attrs.setdefault("class", "form-select")
 
     def _apply_visibility(self, product_form):
         if product_form not in WHEEL_FORM_FIELDS:
@@ -262,20 +256,10 @@ class WheelForm(BasePartForm):
             if name not in self.fields:
                 continue
             if name in show:
-                # оставляем видимым, required — по словарю
                 self.fields[name].required = name in required
             else:
-                # скрываем и снимаем required
                 self.fields[name].widget = forms.HiddenInput()
                 self.fields[name].required = False
-
-    # какие поля — числовые (даже если сейчас ChoiceField)
-    NUMERIC_FIELDS = {
-        "tire_width", "tire_profile", "tire_diameter",
-        "rim_width", "rim_diameter",
-        "pcd_bolt_count", "pcd_diameter", "offset_et", "center_bore",
-        "tread_remain",
-    }
 
     def clean(self):
         cleaned = super().clean()
@@ -299,7 +283,6 @@ class WheelForm(BasePartForm):
             if val in ("", None):
                 cleaned[name] = None
             else:
-                # ChoiceField вернул строку — приводим к типу модели
                 try:
                     if name in ("rim_width", "pcd_diameter", "center_bore", "tread_remain"):
                         cleaned[name] = Decimal(val)

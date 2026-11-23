@@ -1,4 +1,5 @@
 import django_filters as filters
+from decimal import Decimal, InvalidOperation
 
 from .dicts import (
     CONDITIONS, PRODUCT_FORMS, VEHICLE_KINDS, SEASONS, RIM_TYPES,
@@ -66,14 +67,51 @@ class WheelFilter(BasePartFilter):
     season = filters.ChoiceFilter(choices=SEASONS, label="Сезонность")
     rim_type = filters.ChoiceFilter(choices=RIM_TYPES, label="Тип диска")
 
-    # числовые — NumberFilter (сравнивает как число)
-    tire_width = filters.NumberFilter(field_name="tire_width", lookup_expr="exact", label="Ширина шины")
-    tire_profile = filters.NumberFilter(field_name="tire_profile", lookup_expr="exact", label="Профиль")
-    tire_diameter = filters.NumberFilter(field_name="tire_diameter", lookup_expr="exact", label="Диаметр шины")
-    rim_width = filters.NumberFilter(field_name="rim_width", lookup_expr="exact", label="Ширина диска")
-    rim_diameter = filters.NumberFilter(field_name="rim_diameter", lookup_expr="exact", label="Диаметр диска")
-    pcd_bolt_count = filters.NumberFilter(field_name="pcd_bolt_count", lookup_expr="exact", label="Кол-во болтов")
-    pcd_diameter = filters.NumberFilter(field_name="pcd_diameter", lookup_expr="exact", label="PCD")
+    # Числовые поля — ChoiceFilter с choices из словаря + method (приведение к числу)
+    tire_width = filters.ChoiceFilter(
+        choices=_choices(CAR_TIRE_WIDTHS + MOTO_TIRE_WIDTHS),
+        method="filter_numeric", label="Ширина шины",
+    )
+    tire_profile = filters.ChoiceFilter(
+        choices=_choices(CAR_TIRE_PROFILES + MOTO_TIRE_PROFILES),
+        method="filter_numeric", label="Профиль",
+    )
+    tire_diameter = filters.ChoiceFilter(
+        choices=_choices(CAR_TIRE_DIAMETERS + MOTO_TIRE_DIAMETERS),
+        method="filter_numeric", label="Диаметр шины",
+    )
+    rim_width = filters.ChoiceFilter(
+        choices=_choices(RIM_WIDTHS),
+        method="filter_numeric", label="Ширина диска",
+    )
+    rim_diameter = filters.ChoiceFilter(
+        choices=_choices(RIM_DIAMETERS + MOTO_RIM_DIAMETERS),
+        method="filter_numeric", label="Диаметр диска",
+    )
+    pcd_bolt_count = filters.ChoiceFilter(
+        choices=_choices(BOLT_COUNTS),
+        method="filter_numeric", label="Кол-во болтов",
+    )
+    pcd_diameter = filters.ChoiceFilter(
+        choices=_choices(PCD_DIAMETERS),
+        method="filter_numeric", label="PCD",
+    )
+
+    class Meta:
+        model = Wheel
+        fields = []
+
+    def filter_numeric(self, queryset, name, value):
+        """Приводим строку из ChoiceFilter к числу и фильтруем."""
+        if value in ("", None):
+            return queryset
+        try:
+            # Для Decimal-полей (rim_width, pcd_diameter) — Decimal, для остальных — int
+            if name in ("rim_width", "pcd_diameter"):
+                return queryset.filter(**{name: Decimal(value)})
+            return queryset.filter(**{name: int(value)})
+        except (ValueError, TypeError, InvalidOperation):
+            return queryset.none()
 
     class Meta:
         model = Wheel
